@@ -1,3 +1,4 @@
+import time
 import requests
 from collections import OrderedDict
 from crawl.util import split_bbl
@@ -50,6 +51,7 @@ def makequery(bbl):
     ]
     return OrderedDict(pairs)
 
+WAIT = 10
 MAXFAIL = 3
 
 class Agent(object):
@@ -72,6 +74,7 @@ class Agent(object):
             log.exception(e)
             if self._fails > MAXFAIL: 
                  raise RuntimeError("maxfil exceeded")
+	    time.sleep(WAIT)
             return None
 
     def post(self,url,**kwargs):
@@ -87,7 +90,9 @@ class Agent(object):
             log.exception(e)
             if self._fails > MAXFAIL: 
                  raise RuntimeError("maxfil exceeded")
+	    time.sleep(WAIT)
             return None
+
 
     def search(self,bbl):
         data = makequery(bbl)
