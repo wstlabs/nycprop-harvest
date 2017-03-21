@@ -39,17 +39,13 @@ def process(pulldir,stype,pubdate,bbl):
         return 'skip'
     log.info("search %s .." % bbl)
     r = agent.search(bbl)
-    log.info("search.status %s = %s" % (bbl,r.status_code))
-    log.debug("search.headers %s = %s" % (bbl,r.headers))
     if r.status_code != 200:
         log.info("FAIL %s" % bbl)
         return 'fail'
     log.info("grab %s .." % bbl)
     r = agent.grab(bbl,pubdate,stype)
     ctype = r.headers.get('Content-Type')
-    log.info("grab.status %s = %s" % (bbl,r.status_code))
     log.info("grab.content-type %s = %s" % (bbl,ctype))
-    log.debug("grab.headers %s = %s" % (bbl,r.headers))
     if r.status_code != 200:
         log.info("FAIL %s" % bbl)
         return 'fail'
@@ -112,7 +108,7 @@ targets = [int(_) for _ in ioany.read_lines(infile)]
 targets = refine(targets,args)
 
 
-print("let's go..")
+print("let's go (pid = %s)" % os.getpid())
 log.info("let's go..")
 t0 = time.time()
 x = dispatch(d['pull'],args.spec,targets)

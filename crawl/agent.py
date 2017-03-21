@@ -2,6 +2,7 @@ import requests
 from collections import OrderedDict
 from crawl.util import split_bbl
 import crawl.constants
+from crawl.logging import log
 
 
 
@@ -49,23 +50,53 @@ def makequery(bbl):
     ]
     return OrderedDict(pairs)
 
+MAXFAIL = 3
 
 class Agent(object):
 
     def __init__(self):
         self.s = requests.session()
         self.s.headers.update({'User-Agent': 'Mozilla/5.0'})
+        self._fails = 0
+
+    def get(self,url,**kwargs):
+        log.debug("url = %s" % url) 
+        try:
+            r = self.s.get(url,**kwargs)
+            log.info("GET status = %s" % r.status_code)
+            log.debug("GET r.headers = %s" % r.headers)
+            return r
+        except Exception as e:
+            self._fails += 1 
+            log.info ("GET fail, count=%d, reason: = %s" % (self._fails,e)) 
+            log.exception(e)
+            if self._fails > MAXFAIL: 
+                 raise RuntimeError("maxfil exceeded")
+            return None
+
+    def post(self,url,**kwargs):
+        log.debug("url = %s" % url) 
+        try:
+            r = self.s.post(url,**kwargs)
+            log.info("POST r.status = %s" % r.status_code)
+            log.debug("POST r.headers = %s" % r.headers)
+            return r
+        except Exception as e:
+            self._fails += 1 
+            log.info ("GET fail, count=%d, reason: = %s" % (self._fails,e)) 
+            log.exception(e)
+            if self._fails > MAXFAIL: 
+                 raise RuntimeError("maxfil exceeded")
+            return None
 
     def search(self,bbl):
         data = makequery(bbl)
-        r = self.s.post(searchurl,data=data)
-        return r
+        return self.post(searchurl,data=data)
 
     def grab(self,bbl,date,stype):
         assert_valid_stype(stype)
         url = doc_url(bbl,date,stype)
-        r = self.s.get(url)
-        return r
+        return self.get(url)
 
 
 def assert_valid_stype(stype):
