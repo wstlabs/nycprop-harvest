@@ -51,7 +51,7 @@ def makequery(bbl):
     ]
     return OrderedDict(pairs)
 
-WAIT = 10
+WAIT = 5 
 MAXFAIL = 3
 
 class Agent(object):
@@ -73,8 +73,8 @@ class Agent(object):
             log.info ("GET fail, count=%d, reason: = %s" % (self._fails,e)) 
             log.exception(e)
             if self._fails > MAXFAIL: 
-                 raise RuntimeError("maxfil exceeded")
-	    time.sleep(WAIT)
+                 raise RuntimeError("maxfail exceeded")
+            time.sleep(WAIT)
             return None
 
     def post(self,url,**kwargs):
@@ -86,11 +86,11 @@ class Agent(object):
             return r
         except Exception as e:
             self._fails += 1 
-            log.info ("GET fail, count=%d, reason: = %s" % (self._fails,e)) 
+            log.info ("POST fail, count=%d, reason: = %s" % (self._fails,e)) 
             log.exception(e)
             if self._fails > MAXFAIL: 
-                 raise RuntimeError("maxfil exceeded")
-	    time.sleep(WAIT)
+                 raise RuntimeError("maxfail exceeded")
+            time.sleep(WAIT)
             return None
 
 

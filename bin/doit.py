@@ -110,6 +110,7 @@ targets = refine(targets,args)
 
 print("let's go (pid = %s)" % os.getpid())
 log.info("let's go..")
+log.info("args = %s" % args)
 t0 = time.time()
 x = dispatch(d['pull'],args.spec,targets)
 delta = time.time() - t0
