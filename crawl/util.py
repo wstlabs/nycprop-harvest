@@ -7,6 +7,7 @@ specpat = re.compile('^\d{4}Q\d$')
 def is_valid_date_spec(s):
     return bool(re.match(specpat,s))
 
+# XXX deprecated
 _expand = {
     'Q1':'01-01',
     'Q2':'04-03',
