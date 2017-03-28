@@ -77,7 +77,10 @@ def save_list_like(dirpath,d,name):
         ioany.save_lines(outfile,d[k])
 
 
-# deprecated
+#
+# deprecated stuff
+#
+
 def _make_bbl_dir(topdir,bbl):
     """(Softly) creates the parent dir structure for a given BBL."""
     boro,block,lot = split_bbl(bbl)
@@ -88,7 +91,6 @@ def _make_bbl_dir(topdir,bbl):
     return p
 
 
-# XXX deprecated
 _expand = {
     'Q1':'01-01',
     'Q2':'04-03',
