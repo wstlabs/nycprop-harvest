@@ -3,9 +3,17 @@ import os
 from collections import OrderedDict
 import ioany
 
-specpat = re.compile('^\d{4}Q\d$')
+pat = {}
+pat['spec-isa'] = re.compile('^\d{4}Q\d$')
+pat['spec-vals'] = re.compile('^(\d{4})Q(\d)$')
 def is_valid_date_spec(s):
-    return bool(re.match(specpat,s))
+    return bool(re.match(pat['spec-isa'],s))
+
+def split_spec(s):
+    m = re.match(pat['spec-vals'],s)
+    year    = int(m.group(1))
+    quarter = int(m.group(2))
+    return year,quarter
 
 bblpat = re.compile('^(\d)(\d{5})(\d{4})$')
 def split_bbl(bbl):
