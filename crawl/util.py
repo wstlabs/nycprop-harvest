@@ -7,25 +7,6 @@ specpat = re.compile('^\d{4}Q\d$')
 def is_valid_date_spec(s):
     return bool(re.match(specpat,s))
 
-# XXX deprecated
-_expand = {
-    'Q1':'01-01',
-    'Q2':'04-03',
-    'Q3':'07-01',
-    'Q4':'10-01',
-}
-def expand_date_spec(spec):
-    """Converts a date spec to activity date, e.g. '2017Q2' => '2017-07-01'"""
-    if is_valid_date_spec(spec):
-        year = int(spec[:4])
-        quarter = spec[4:]
-        mmdd = _expand.get(quarter)
-        if mmdd is not None:
-            return "%.4d-%s" % (year,mmdd)
-    raise ValueError("invalid date spec '%s'" % spec)
-
-
-
 bblpat = re.compile('^(\d)(\d{5})(\d{4})$')
 def split_bbl(bbl):
     s = str(bbl)
@@ -104,5 +85,25 @@ def save_list_like(dirpath,d,name):
         outfile = "%s/%s-%s.txt" % (dirpath,name,k)
         print("%s '%s': %d to %s .." % (name,k,len(values),outfile))
         ioany.save_lines(outfile,d[k])
+
+
+
+# XXX deprecated
+_expand = {
+    'Q1':'01-01',
+    'Q2':'04-03',
+    'Q3':'07-01',
+    'Q4':'10-01',
+}
+def expand_date_spec(spec):
+    """Converts a date spec to activity date, e.g. '2017Q2' => '2017-07-01'"""
+    if is_valid_date_spec(spec):
+        year = int(spec[:4])
+        quarter = spec[4:]
+        mmdd = _expand.get(quarter)
+        if mmdd is not None:
+            return "%.4d-%s" % (year,mmdd)
+    raise ValueError("invalid date spec '%s'" % spec)
+
 
 
