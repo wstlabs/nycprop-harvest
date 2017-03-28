@@ -33,16 +33,6 @@ def make_bbl_dir(topdir,bbl):
         mkdir_soft(p)
     return p
 
-# deprecated
-def _make_bbl_dir(topdir,bbl):
-    """(Softly) creates the parent dir structure for a given BBL."""
-    boro,block,lot = split_bbl(bbl)
-    p1 = "%s/%.1d" % (topdir,boro)
-    p2 = "%s/%.5d" % (p1,block)
-    for p in (p1,p2):
-        mkdir_soft(p)
-    return p
-
 def mkdir_soft(dirname):
     """Creates a directory (unless it already exist).  Because it's entirely
     possible that another process can be attempting to create a directory at the
@@ -86,6 +76,16 @@ def save_list_like(dirpath,d,name):
         print("%s '%s': %d to %s .." % (name,k,len(values),outfile))
         ioany.save_lines(outfile,d[k])
 
+
+# deprecated
+def _make_bbl_dir(topdir,bbl):
+    """(Softly) creates the parent dir structure for a given BBL."""
+    boro,block,lot = split_bbl(bbl)
+    p1 = "%s/%.1d" % (topdir,boro)
+    p2 = "%s/%.5d" % (p1,block)
+    for p in (p1,p2):
+        mkdir_soft(p)
+    return p
 
 
 # XXX deprecated
