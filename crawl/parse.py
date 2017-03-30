@@ -19,7 +19,7 @@ def extract_between(page,startlabel,endlabel,offset=1):
 
 def yield_after(page,label,offset=1):
     for i,line in enumerate(page):
-        if line == label:
+        if line.startswith(label):
             if i+offset < len(page):
                 yield page[i+offset]
             else:
@@ -60,6 +60,8 @@ def parse(f):
     bigpage = reduce(lambda x, y: x+y,text)
     d = OrderedDict()
     x = OrderedDict()
+    market_value = extract_after(bigpage,'Estimated market value',0)
+    x['market-value'] = market_value.replace(",","") if market_value is not None else None
     x['tax-class'] = extract_after(bigpage,'Tax class',0)
     x['owner-name'] = extract_between(text[0],'Owner name:','Property address:')
     x['mailing-address'] = extract_mailing_address(text[0])
@@ -75,8 +77,6 @@ def parse(f):
 #
 # deprecated stuff
 #
-
-
 
 pat = {}
 pat['abatement'] = re.compile('^.*abatement',re.IGNORECASE)
