@@ -17,6 +17,7 @@ def extract_between(page,startlabel,endlabel,offset=1):
             block.append(line)
     return None
 
+
 def yield_after(page,label,offset=1):
     for i,line in enumerate(page):
         if line.startswith(label):
@@ -57,13 +58,27 @@ def extract_mailing_address(page):
 def scrub_amount(s):
     return None if s is None else s.replace(",","").replace("$","")
 
+def extract_amount_after(page,label):
+    found = False
+    for i,line in enumerate(page):
+        if line.startswith(label):
+            found = True
+        elif found and line.startswith("$"):
+            return line
+
+def extract_balance(bigpage):
+    balance = extract_after(bigpage,'Total amount due by',-1,2)
+    if balance is not None and balance.startswith("$"):
+        return balance
+    return extract_amount_after(bigpage,'Total amount due by')
+
 def parse_general(pages,bigpage):
     x = OrderedDict()
     x['tax-class'] = extract_after(bigpage,'Tax class',0)
     x['owner-name'] = extract_between(pages[0],'Owner name:','Property address:')
     x['mailing-address'] = extract_mailing_address(pages[0])
     market_value = extract_after(bigpage,'Estimated market value',0)
-    balance = extract_after(bigpage,'Total amount due by',-1,2)
+    balance = extract_balance(bigpage)
     x['estimated-market-value'] = scrub_amount(market_value)
     x['total-amount-due'] = scrub_amount(balance)
     return x
