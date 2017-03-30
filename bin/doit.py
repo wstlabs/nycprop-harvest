@@ -1,6 +1,7 @@
 import os
 import sys
 import time
+import datetime
 from itertools import islice
 from collections import defaultdict
 import argparse
@@ -44,10 +45,13 @@ def process(pulldir,stype,pubdate,bbl):
         return 'fail'
     log.info("grab %s .." % bbl)
     r = agent.grab(bbl,pubdate,stype)
+    if r is None:
+        log.info("FAIL exception - %s" % bbl)
+        return 'fail'
     ctype = r.headers.get('Content-Type')
     log.info("grab.content-type %s = %s" % (bbl,ctype))
     if r.status_code != 200:
-        log.info("FAIL %s" % bbl)
+        log.info("FAIL %d - %s" % (r.status_code,bbl))
         return 'fail'
     if ctype is None:
         log.info("ERROR %s - bad content type '%s'" % (bbl,ctype))
@@ -101,24 +105,34 @@ def dispatch(pulldir,spec,targets):
         x[stat] += [n]
     return x
 
+def run(spec,targets):
+    log.info("..")
+    t0 = time.time()
+    x = dispatch(d['pull'],args.spec,targets)
+    delta = time.time() - t0
+    tally = {k:len(v) for k,v in x.items()}
+    log.info("done in %.3f sec" % delta)
+    log.info("tally = %s" % tally)
+
+
+log.info("start at %s" % datetime.datetime.now())
+log.info("args = %s" % args)
 d = init_stash(args)
-log.info("stash = %s" % args.stash)
+
 infile = args.targets if args.targets else "%s/targets.txt" % d['meta']
 targets = [int(_) for _ in ioany.read_lines(infile)]
 targets = refine(targets,args)
 
-
-print("let's go (pid = %s)" % os.getpid())
-log.info("let's go..")
-log.info("args = %s" % args)
-t0 = time.time()
-x = dispatch(d['pull'],args.spec,targets)
-delta = time.time() - t0
-tally = {k:len(v) for k,v in x.items()}
-print("done in %.3f sec" % delta)
-print("tally = %s" % tally)
-log.info("done in %.3f sec" % delta)
-log.info("tally = %s" % tally)
+# The main loop, in theory, is already exception-checked.
+# But in facse it ever does raise, we catch and log it here.
+try:
+    run(args.spec,targets)
+except Exception as e:
+    log.info("FAIL severe exception %s" % n)
+    log.exception(e)
+    log.info("ABORT")
+    sys.exit(1)
 
 log.info("done.")
+
 
