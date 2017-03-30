@@ -54,21 +54,31 @@ def extract_mailing_address(page):
             return address
     return extract_first(page,'Mailing address:')
 
+def scrub_amount(s):
+    return None if s is None else s.replace(",","").replace("$","")
 
-def parse(f):
-    text = list(textify(f))
-    bigpage = reduce(lambda x, y: x+y,text)
-    d = OrderedDict()
+def parse_general(pages,bigpage):
     x = OrderedDict()
-    market_value = extract_after(bigpage,'Estimated market value',0)
-    x['market-value'] = market_value.replace(",","") if market_value is not None else None
     x['tax-class'] = extract_after(bigpage,'Tax class',0)
-    x['owner-name'] = extract_between(text[0],'Owner name:','Property address:')
-    x['mailing-address'] = extract_mailing_address(text[0])
-    d['general'] = x
+    x['owner-name'] = extract_between(pages[0],'Owner name:','Property address:')
+    x['mailing-address'] = extract_mailing_address(pages[0])
+    market_value = extract_after(bigpage,'Estimated market value',0)
+    balance = extract_after(bigpage,'Total amount due by',-1,2)
+    x['estimated-market-value'] = scrub_amount(market_value)
+    x['total-amount-due'] = scrub_amount(balance)
+    return x
+
+def parse_stabilization(pages,bigpage):
     x = OrderedDict()
     x['count'] = extract_after(bigpage,'Housing-Rent Stabilization',-1)
-    d['stabilization'] = x
+    return x
+
+def parse(f):
+    pages = list(textify(f))
+    bigpage = reduce(lambda x, y: x+y,pages)
+    d = OrderedDict()
+    d['general'] = parse_general(pages,bigpage)
+    d['stabilization'] = parse_stabilization(pages,bigpage)
     return d
 
 
