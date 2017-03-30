@@ -51,7 +51,7 @@ def makequery(bbl):
     ]
     return OrderedDict(pairs)
 
-WAIT = 5 
+WAIT = 60
 MAXFAIL = 3
 
 class Agent(object):
