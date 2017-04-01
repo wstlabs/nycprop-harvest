@@ -28,6 +28,10 @@ def extract_between(page,startlabel,endlabel,offset=1):
             block.append(line)
     return None
 
+def yield_index(page,label):
+    for i,line in enumerate(page):
+        if line.startswith(label):
+            yield i
 
 def yield_after(page,label,offset=1):
     for i,line in enumerate(page):
@@ -126,12 +130,19 @@ def parse_stabilization(pages,bigpage):
     x['unitcount'] = extract_unitcount(bigpage)
     return x
 
+def parse_abatements(pages,bigpage):
+    x = OrderedDict()
+    # x['exist'] = 'yes' if list(yield_index(bigpage,'Tax before abatements')) else 'no'
+    x['special-interest'] = 'yes' if list(yield_index(bigpage,'Spec Init Pgm')) else 'no'
+    return x
+
 def parse(f):
     pages = list(textify(f))
     bigpage = reduce(lambda x, y: x+y,pages)
     d = OrderedDict()
     d['general']       = parse_general(pages,bigpage)
     d['stabilization'] = parse_stabilization(pages,bigpage)
+    d['abatements']    = parse_abatements(pages,bigpage)
     return d
 
 
