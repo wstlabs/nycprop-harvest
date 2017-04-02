@@ -2,6 +2,7 @@ import time
 import requests
 from collections import OrderedDict
 from crawl.util import split_bbl
+from crawl.decorators import backoff
 import crawl.constants
 from crawl.logging import log
 
@@ -61,7 +62,34 @@ class Agent(object):
         self.s.headers.update({'User-Agent': 'Mozilla/5.0'})
         self._fails = 0
 
+    @backoff(retry=3,interval=120,log=log)
     def get(self,url,**kwargs):
+        log.debug("url = %s" % url) 
+        r = self.s.get(url,**kwargs)
+        log.info("GET status = %s" % r.status_code)
+        log.debug("GET r.headers = %s" % r.headers)
+        return r
+
+    @backoff(retry=3,interval=120,log=log)
+    def post(self,url,**kwargs):
+        log.debug("url = %s" % url) 
+        r = self.s.post(url,**kwargs)
+        log.info("POST r.status = %s" % r.status_code)
+        log.debug("POST r.headers = %s" % r.headers)
+        return r
+
+    def search(self,bbl):
+        data = makequery(bbl)
+        return self.post(searchurl,data=data)
+
+    def grab(self,bbl,date,stype):
+        assert_valid_stype(stype)
+        url = doc_url(bbl,date,stype)
+        return self.get(url)
+
+
+
+    def __get(self,url,**kwargs):
         log.debug("url = %s" % url) 
         try:
             r = self.s.get(url,**kwargs)
@@ -77,7 +105,7 @@ class Agent(object):
             time.sleep(WAIT)
             return None
 
-    def post(self,url,**kwargs):
+    def __post(self,url,**kwargs):
         log.debug("url = %s" % url) 
         try:
             r = self.s.post(url,**kwargs)
@@ -92,16 +120,6 @@ class Agent(object):
                  raise RuntimeError("maxfail exceeded")
             time.sleep(WAIT)
             return None
-
-
-    def search(self,bbl):
-        data = makequery(bbl)
-        return self.post(searchurl,data=data)
-
-    def grab(self,bbl,date,stype):
-        assert_valid_stype(stype)
-        url = doc_url(bbl,date,stype)
-        return self.get(url)
 
 
 def assert_valid_stype(stype):
