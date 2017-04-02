@@ -64,7 +64,7 @@ class Agent(object):
 
     @backoff(retry=3,interval=120,log=log)
     def get(self,url,**kwargs):
-        log.debug("url = %s" % url) 
+        log.debug("url = %s" % url)
         r = self.s.get(url,**kwargs)
         log.info("GET status = %s" % r.status_code)
         log.debug("GET r.headers = %s" % r.headers)
@@ -72,7 +72,7 @@ class Agent(object):
 
     @backoff(retry=3,interval=120,log=log)
     def post(self,url,**kwargs):
-        log.debug("url = %s" % url) 
+        log.debug("url = %s" % url)
         r = self.s.post(url,**kwargs)
         log.info("POST r.status = %s" % r.status_code)
         log.debug("POST r.headers = %s" % r.headers)
