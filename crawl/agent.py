@@ -62,7 +62,7 @@ class Agent(object):
         self.s.headers.update({'User-Agent': 'Mozilla/5.0'})
         self._fails = 0
 
-    @backoff(retry=3,interval=120,log=log)
+    @backoff(retry=3,wait=120,log=log)
     def get(self,url,**kwargs):
         log.debug("url = %s" % url)
         r = self.s.get(url,**kwargs)
@@ -70,7 +70,7 @@ class Agent(object):
         log.debug("GET r.headers = %s" % r.headers)
         return r
 
-    @backoff(retry=3,interval=120,log=log)
+    @backoff(retry=3,wait=120,log=log)
     def post(self,url,**kwargs):
         log.debug("url = %s" % url)
         r = self.s.post(url,**kwargs)
