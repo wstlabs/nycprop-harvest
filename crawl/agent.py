@@ -2,7 +2,7 @@ import time
 import requests
 from collections import OrderedDict
 from crawl.util import split_bbl
-from crawl.decorators import backoff
+from crawl.backoff import backoff
 import crawl.constants
 from crawl.logging import log
 
