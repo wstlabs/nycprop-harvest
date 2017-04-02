@@ -128,7 +128,7 @@ targets = refine(targets,args)
 try:
     run(args.spec,targets)
 except Exception as e:
-    log.info("FAIL severe exception %s" % n)
+    log.info("FAIL severe exception %s" % e)
     log.exception(e)
     log.info("ABORT")
     sys.exit(1)
