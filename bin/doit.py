@@ -116,7 +116,6 @@ def run(spec,targets):
 
 
 log.info("start at %s" % datetime.datetime.now())
-log.info("args = %s" % args)
 d = init_stash(args)
 
 infile = args.targets if args.targets else "%s/targets.txt" % d['meta']
