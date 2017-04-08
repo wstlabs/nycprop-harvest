@@ -41,7 +41,7 @@ def harvest(pairs,spec):
             amount    = r['general']['total-amount-due']
             estimated = r['general']['estimated-market-value']
             unitcount = r['stabilization']['unitcount']
-            yield bbl,year,quarter,htype,taxclass,unitcount,estimated,balance
+            yield bbl,year,quarter,htype,taxclass,unitcount,estimated,amount
     values = (_ for _ in walker())
     return values,seen
 
