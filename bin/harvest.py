@@ -38,7 +38,7 @@ def harvest(pairs,spec):
             seen['valid'].add(bbl)
             htype     = r['general']['htype']
             taxclass  = r['general']['tax-class']
-            balance   = r['general']['total-amount-due']
+            amount    = r['general']['total-amount-due']
             estimated = r['general']['estimated-market-value']
             unitcount = r['stabilization']['unitcount']
             yield bbl,year,quarter,htype,taxclass,unitcount,estimated,balance
@@ -47,7 +47,7 @@ def harvest(pairs,spec):
 
 
 print("harvesting to '%s' .." % outfile)
-header = ('bbl','year','quarter','htype','taxclass','unitcount','estimated','balance')
+header = ('bbl','year','quarter','htype','taxclass','unitcount','estimated','amount')
 values,seen,delta = harvest(pairs,spec)
 ioany.save_csv(outfile,stream=values,header=header)
 print("harvest'd in %.3f sec" % delta)
