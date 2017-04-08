@@ -38,6 +38,7 @@ def init_targets(d,args):
     targets = list(read_ints(targetsfile))
     targets = refine(targets,args)
     print("that be %d targets." % len(targets))
+    log.info("that be %d targets." % len(targets))
     return targets
 
 def process_target(pulldir,stype,bbl):

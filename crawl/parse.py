@@ -115,14 +115,19 @@ def extract_unitcount(page):
     and make a note of this weirdness in the logs."""
     rawvals = list(yield_after(page,'Housing-Rent Stabilization'))
     log.info("RAW %s" % rawvals)
-    intlike = (int(_) for _ in rawvals if re.match(pat['integer'],_))
-    counts  = sorted(set(intlike))
+    counts = [int(_) for _ in rawvals if re.match(pat['integer'],_)]
     if len(counts) < 1:
         if rawvals:
+            # Means we get datefield entries, but no actual unit counts.
+            # Seems to happen only on a small number of lots with but past-due charges 
+            # but apparently no longer having stabilized units.
             log.info("WEIRD rawvals = %s but none are integer" % rawvals)
+        # Either way, interpret as having no units.
         return None
     if len(counts) > 1:
-        log.info("WEIRD too many unitcount values %s" % counts)
+        # Happens occasionally for lots with multiple buildings. 
+        log.info("WEIRD multiple unitcount values %s" % counts)
+        return sum(counts)
     return counts[0]
 
 def parse_stabilization(pages,bigpage):
