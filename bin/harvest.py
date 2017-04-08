@@ -36,15 +36,18 @@ def harvest(pairs,spec):
             if bbl in seen['valid']:
                 raise ValueError("duplicate BBL %s" % bbl)
             seen['valid'].add(bbl)
-            taxclass =  r['general']['tax-class']
-            unitcount = r['stabilization']['count']
-            yield bbl,year,quarter,taxclass,unitcount
+            htype     = r['general']['htype']
+            taxclass  = r['general']['tax-class']
+            balance   = r['general']['total-amount-due']
+            estimated = r['general']['estimated-market-value']
+            unitcount = r['stabilization']['unitcount']
+            yield bbl,year,quarter,htype,taxclass,unitcount,estimated,balance
     values = (_ for _ in walker())
     return values,seen
 
 
 print("harvesting to '%s' .." % outfile)
-header = ('bbl','year','quarter','taxclass','unitcount')
+header = ('bbl','year','quarter','htype','taxclass','unitcount','estimated','balance')
 values,seen,delta = harvest(pairs,spec)
 ioany.save_csv(outfile,stream=values,header=header)
 print("harvest'd in %.3f sec" % delta)
