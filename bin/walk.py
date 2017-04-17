@@ -97,16 +97,44 @@ def refine(targets,args):
         targets = targets[:args.limit]
     return targets
 
+def make_path(stype,bbl,ext):
+    subdir = bbl2dirpath(bbl)
+    fname = "%s-%d.%s" % (stype,bbl,ext)
+    return "%s/%s" % (subdir,fname)
+
+@timedsingle
+def check_targets(d,stype,targets):
+    """Given a list of targets, determines whether our stash has a .pdf file, and .html file,
+    both, or is completely missing."""
+    pulldir = d['pull']
+    x = defaultdict(list)
+    awol = []
+    for bbl in targets:
+        found = False 
+        for ext in ('pdf','html'):
+            subpath = make_path(stype,bbl,ext)
+            infile = "%s/%s" % (pulldir,subpath)
+            if os.path.exists(infile):
+                x[ext].append(bbl) 
+                found = True
+        if not found: 
+            missing.append(bbl) 
+    x['miss'] = sorted(set(targets)-set(x['pdf'])) 
+    x['awol'] = awol 
+    return x
+
+
 d = init_stash(args)
 targets = init_targets(d,args)
 
 
 STYPE = 'SOA'
 if args.check:
-    seen,missing,delta = analyze(d['pull'],STYPE,targets)
+    print("check ..")
+    x,delta = check_targets(d,STYPE,targets)
     print("check'd in %.3f sec" % delta)
-    save_list_like(d['data'],seen,'check-seen')
-    save_list_like(d['data'],missing,'check-missing')
+    save_list_like(d['data'],x,'check')
+    # save_list_like(d['data'],missing,'check-missing')
 elif args.parse:
     print("parse ..")
     status,delta = process(d,STYPE,args.spec,targets)
