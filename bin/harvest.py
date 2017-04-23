@@ -41,13 +41,15 @@ def harvest(pairs,spec):
             amount    = r['general']['total-amount-due']
             estimated = r['general']['estimated-market-value']
             unitcount = r['stabilization']['unitcount']
-            yield bbl,year,quarter,htype,taxclass,unitcount,estimated,amount
+            _421a = 1 if r['abatements']['421a'] else ''
+            _J51 = 1 if r['abatements']['J51'] else ''
+            yield bbl,year,quarter,htype,taxclass,unitcount,estimated,amount,_421a,_J51
     values = (_ for _ in walker())
     return values,seen
 
 
 print("harvesting to '%s' .." % outfile)
-header = ('bbl','year','quarter','htype','taxclass','unitcount','estimated','amount')
+header = ('bbl','year','quarter','htype','taxclass','unitcount','estimated','amount','_421a','_J51')
 values,seen,delta = harvest(pairs,spec)
 ioany.save_csv(outfile,stream=values,header=header)
 print("harvest'd in %.3f sec" % delta)
