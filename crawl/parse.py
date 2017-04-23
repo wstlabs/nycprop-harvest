@@ -139,6 +139,10 @@ def parse_abatements(pages,bigpage):
     x = OrderedDict()
     # x['exist'] = 'yes' if list(yield_index(bigpage,'Tax before abatements')) else 'no'
     x['special-interest'] = 'yes' if list(yield_index(bigpage,'Spec Init Pgm')) else 'no'
+    _421a = list(yield_after(bigpage,'421a',offset=0))
+    x['421a'] = _421a[0] if _421a else None
+    _j51 = list(yield_after(bigpage,'J-51',offset=0))
+    x['J51'] = _j51[0] if _j51 else None 
     return x
 
 def parse(f):
