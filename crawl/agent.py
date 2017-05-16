@@ -88,40 +88,6 @@ class Agent(object):
         return self.get(url)
 
 
-
-    def __get(self,url,**kwargs):
-        log.debug("url = %s" % url) 
-        try:
-            r = self.s.get(url,**kwargs)
-            log.info("GET status = %s" % r.status_code)
-            log.debug("GET r.headers = %s" % r.headers)
-            return r
-        except Exception as e:
-            self._fails += 1 
-            log.info ("GET fail, count=%d, reason: = %s" % (self._fails,e)) 
-            log.exception(e)
-            if self._fails > MAXFAIL: 
-                 raise RuntimeError("maxfail exceeded")
-            time.sleep(WAIT)
-            return None
-
-    def __post(self,url,**kwargs):
-        log.debug("url = %s" % url) 
-        try:
-            r = self.s.post(url,**kwargs)
-            log.info("POST r.status = %s" % r.status_code)
-            log.debug("POST r.headers = %s" % r.headers)
-            return r
-        except Exception as e:
-            self._fails += 1 
-            log.info ("POST fail, count=%d, reason: = %s" % (self._fails,e)) 
-            log.exception(e)
-            if self._fails > MAXFAIL: 
-                 raise RuntimeError("maxfail exceeded")
-            time.sleep(WAIT)
-            return None
-
-
 def assert_valid_stype(stype):
     if stype not in crawl.constants.valid_statement_types:
         raise ValueError("invalid statement type '%s'" % stype)
