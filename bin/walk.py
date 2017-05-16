@@ -60,7 +60,7 @@ def expand(bbl,d):
 def traverse(pulldir,stype,targets):
     status = defaultdict(list)
     def _walkdir():
-        for bbl in targets:
+        for i,bbl in enumerate(targets):
             log.debug("bbl = %s" % bbl)
             try:
                 d = process_target(pulldir,stype,bbl)
